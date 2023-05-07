@@ -1,4 +1,9 @@
 
 * {
-    font-family: 'syne', Arial, Helvetica, sans-serif;
+    font-family: 'Ubuntu', Arial, Helvetica, sans-serif;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
 }

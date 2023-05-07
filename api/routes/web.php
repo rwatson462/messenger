@@ -7,18 +7,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Ramsey\Uuid\Uuid;
 
-Route::get('/login', function() {
-    return 'Login page';
-})->name('login');
+Route::prefix('/login')->group(function() {
+    Route::view('/', 'auth.login')->name('login');
+    Route::post('/', \App\Http\Controllers\Auth\LoginController::class);
+});
 
-Route::prefix('/')->middleware('auth.session')->group(function() {
+Route::get('/logout', \App\Http\Controllers\Auth\LogoutController::class)->name('logout');
 
-    Route::get('/', function() {
-        return view('conversations.index', [
-            'conversations' => Conversation::all(),
+Route::prefix('/')->middleware('auth')->group(function() {
+
+    Route::view('/','conversations.index', [
+            'conversations' => Conversation::where('created_by_uuid', auth()->user()?->uuid)
+                ->orWhereHas('recipients', fn($query) => $query->where('uuid', auth()->user()?->uuid))
+                ->get(),
             'users' => User::all(),
-        ]);
-    })->name('conversations.index');
+    ])->name('conversations.index');
 
     Route::prefix('/new')->group(function() {
 
