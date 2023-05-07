@@ -1,7 +1,10 @@
 services:
   api:
-    build: docker/laravel
-    tty: true
+    build:
+      context: docker/laravel
+      args:
+        - UID=1000
+        - GID=1000
     volumes:
       - "./api:/app"
     ports:
