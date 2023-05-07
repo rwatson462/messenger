@@ -1,0 +1,21 @@
+services:
+  api:
+    build: docker/laravel
+    tty: true
+    volumes:
+      - "./api:/app"
+    ports:
+      - "3001:3001"
+  database:
+    image: mysql:latest
+    environment:
+      - MYSQL_USER=laravel
+      - MYSQL_PASSWORD=secret
+      - MYSQL_DATABASE=messenger
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+    volumes:
+      - "./data/mysql:/var/lib/mysql"
+  cache:
+    image: redis:latest
+    volumes:
+      - "./data/redis:/data"
