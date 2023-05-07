@@ -13,11 +13,13 @@ class DatabaseSeeder extends Seeder
     {
          User::factory(10)->create();
 
-         Conversation::factory(10)
-             ->has(User::factory(3), 'recipients')
-             ->create();
+         Conversation::factory(10)->create();
 
          Conversation::all()->map(function(Conversation $conversation) {
+             // Add 3 recipients
+             $conversation->recipients()->attach(User::query()->inRandomOrder()->take(3)->get());
+
+             // Add 10 messages
              $i=10;
              while ($i--) {
                  Message::factory()->create([
