@@ -4,6 +4,7 @@ namespace Tests\Unit\Models;
 
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\MessageParticipantStatus;
 use App\Models\User;
 use Tests\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -32,5 +33,15 @@ class MessageTest extends TestCase
 
         $this->assertInstanceOf(UuidInterface::class, $message->uuid);
         $this->assertTrue($uuid->equals($message->uuid));
+    }
+
+    public function test_canGetParticipantStatuses(): void
+    {
+        /** @var Message $message */
+        $message = Message::factory()
+            ->has(MessageParticipantStatus::factory(), 'participantStatuses')
+            ->create();
+
+        $this->assertCount(1, $message->participantStatuses);
     }
 }

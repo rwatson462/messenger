@@ -34,6 +34,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
     public function getUuidAttribute(): UuidInterface
     {
         return UuidV4::fromString($this->attributes['uuid']);

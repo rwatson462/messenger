@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Conversation;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ramsey\Uuid\Uuid;
 
@@ -15,6 +17,8 @@ class MessageFactory extends Factory
         return [
             'uuid' => Uuid::uuid4(),
             'body' => fake()->sentence(),
+            'sender_uuid' => User::query()->inRandomOrder()->first()->uuid,
+            'conversation_uuid' => Conversation::query()->inRandomOrder()->first()->uuid,
         ];
     }
 }

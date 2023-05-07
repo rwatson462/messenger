@@ -1,76 +1,39 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Conversations\CreateController;
+use App\Http\Controllers\Conversations\IndexController;
+use App\Http\Controllers\Conversations\ShowController;
+use App\Http\Controllers\Conversations\StoreController;
+use App\Http\Controllers\Message\SendController;
 use App\Models\Conversation;
 use App\Models\Message;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Ramsey\Uuid\Uuid;
 
 Route::prefix('/login')->group(function() {
     Route::view('/', 'auth.login')->name('login');
-    Route::post('/', \App\Http\Controllers\Auth\LoginController::class);
+    Route::post('/', LoginController::class);
 });
 
-Route::get('/logout', \App\Http\Controllers\Auth\LogoutController::class)->name('logout');
+Route::get('/logout', LogoutController::class)->name('logout');
 
 Route::prefix('/')->middleware('auth')->group(function() {
-
-    Route::view('/','conversations.index', [
-            'conversations' => Conversation::where('created_by_uuid', auth()->user()?->uuid)
-                ->orWhereHas('recipients', fn($query) => $query->where('uuid', auth()->user()?->uuid))
-                ->get(),
-            'users' => User::all(),
-    ])->name('conversations.index');
-
-    Route::prefix('/new')->group(function() {
-
-        Route::get('/', function() {
-            return view('conversation.new');
-        })->name('conversation.new');
-
-        Route::post('/', function(Request $request) {
-            $input = $request->validate([
-                'title' => 'required|max:255',
-            ]);
-
-            $conversation = Conversation::create([
-                'uuid' => Uuid::uuid4(),
-                'title' => $input['title'],
-            ]);
-
-            return redirect(route('conversation.show', [
-                'conversation' => $conversation->uuid,
-            ]));
-        });
-    });
+    Route::get('/', IndexController::class)->name('conversations.index');
 
     Route::prefix('/conversation')->group(function() {
+        Route::get('/new/', CreateController::class)->name('conversation.new');
+        Route::post('/new', StoreController::class)->name('conversation.store');
+
+        Route::post('/', StoreController::class)->name('conversation.create');
 
         Route::prefix('/{conversation}')->group(function() {
 
-            Route::get('/', function (Conversation $conversation) {
-                return view('conversation.show', [
-                    'conversation' => $conversation
-                ]);
-            })->name('conversation.show');
+            Route::get('/', ShowController::class)->name('conversation.show');
 
-            Route::post('/', function(Conversation $conversation, Request $request) {
-                $message = $request->validate([
-                    'message' => 'required|max:255',
-                ]);
-
-                // todo find sender uuid from auth user
-                Message::create([
-                    'body' => $message['message'],
-                    'sender_uuid' => $conversation->recipients()->inRandomOrder()->first()->uuid,
-                    'conversation_uuid' => $conversation->uuid,
-                    'uuid' => Uuid::uuid4(),
-                ]);
-
-                return redirect(route('conversation.show', ['conversation' => $conversation->uuid]));
-
-            })->name('conversation.message.send');
+            Route::post('/', SendController::class)->name('conversation.message.send');
         });
 
     });

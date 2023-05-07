@@ -1,8 +1,13 @@
 <x-layout>
-    <x-section title="Recipients">
+    <x-section title="Participants">
         <ul>
-            @foreach($conversation->recipients as $recipient)
-                <li>{{ $recipient->name }}</li>
+            @foreach($conversation->participants as $participant)
+                <li>
+                    {{ $participant->name }}
+                    @if ($participant->uuid->equals(auth()->user()->uuid))
+                        (you)
+                    @endif
+                </li>
             @endforeach
         </ul>
     </x-section>

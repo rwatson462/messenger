@@ -1,9 +1,13 @@
 
 * {
-    font-family: 'Ubuntu', Arial, Helvetica, sans-serif;
+    font-family: 'Open sans', Arial, Helvetica, sans-serif;
 }
 
 .error {
     color: red;
     font-weight: bold;
+}
+
+section {
+    padding: 1rem 0;
 }

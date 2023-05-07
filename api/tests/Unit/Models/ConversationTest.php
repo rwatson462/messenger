@@ -27,14 +27,15 @@ class ConversationTest extends TestCase
         $this->assertTrue($uuid->equals($conversation->uuid));
     }
 
-    public function test_canGetRecipients(): void
+    public function test_canGetParticipants(): void
     {
         /** @var Conversation $conversation */
         $conversation = Conversation::factory()
-            ->has(User::factory(3), 'recipients')
+            ->has(User::factory(3), 'participants')
             ->create();
 
-        $this->assertCount(3, $conversation->recipients);
+        // Even though we added 3 participants above, the creator is also added as a participant
+        $this->assertCount(4, $conversation->participants);
     }
 
     public function test_canGetMessages(): void
@@ -45,7 +46,7 @@ class ConversationTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $conversation->recipients()->attach($user);
+        $conversation->participants()->attach($user);
 
         $message = Message::factory()->create([
             'sender_uuid' => $user->uuid,
@@ -53,5 +54,18 @@ class ConversationTest extends TestCase
         ]);
 
         $this->assertCount(1, $conversation->messages);
+    }
+
+    public function test_canGetCreator(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+
+        /** @var Conversation $conversation */
+        $conversation = Conversation::factory()->create([
+            'created_by_uuid' => $user->uuid,
+        ]);
+
+        $this->assertEquals($user->uuid, $conversation->creator->uuid);
     }
 }
