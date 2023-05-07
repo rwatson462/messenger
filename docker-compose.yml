@@ -6,8 +6,11 @@ services:
       - "./api:/app"
     ports:
       - "3001:3001"
+    depends_on:
+      - database
+      - cache
   database:
-    image: mysql:latest
+    image: mysql:8
     environment:
       - MYSQL_USER=laravel
       - MYSQL_PASSWORD=secret
@@ -16,6 +19,6 @@ services:
     volumes:
       - "./data/mysql:/var/lib/mysql"
   cache:
-    image: redis:latest
+    image: redis:7
     volumes:
       - "./data/redis:/data"

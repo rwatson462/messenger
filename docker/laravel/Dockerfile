@@ -1,4 +1,4 @@
-FROM php:latest
+FROM php:8.2
 
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y zip libzip-dev
@@ -11,4 +11,6 @@ RUN docker-php-ext-install pdo pdo_mysql
 RUN mkdir /app
 WORKDIR /app
 
-ENTRYPOINT php artisan serve --host=0.0.0.0 --port=3001
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT /entrypoint.sh
