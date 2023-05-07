@@ -14,6 +14,7 @@ return new class extends Migration
 
             $table->uuid();
             $table->string('title', 255);
+            $table->uuid('created_by_uuid');
         });
     }
 

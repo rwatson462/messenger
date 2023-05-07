@@ -8,9 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('conversation_recipients', function (Blueprint $table) {
+        Schema::create('conversation_participants', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->uuid('conversation_uuid');
             $table->uuid('user_uuid');
@@ -19,6 +20,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('conversation_recipients');
+        Schema::dropIfExists('conversation_participants');
     }
 };
